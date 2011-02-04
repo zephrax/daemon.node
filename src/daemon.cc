@@ -6,78 +6,182 @@
 */
 
 #include <v8.h>
+#include <node.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <ev.h>
+#include <errno.h>
+#include <pwd.h>
 
 #define PID_MAXLEN 10
 
 using namespace v8;
 
+//
 // Go through special routines to become a daemon.
 // if successful, returns daemon's PID
+//
 Handle<Value> Start(const Arguments& args) {
+  HandleScope scope;
   pid_t pid, sid;
   int i, new_fd;
 
-  if (args.Length() < 1) {
-    return ThrowException(Exception::TypeError(
-          String::New("Must have at least one arg containing the file descriptor")));
-  }
-
-  new_fd = args[0]->Int32Value();
-
   pid = fork();
-  if(pid > 0) exit(0);
-  if(pid < 0) exit(1);
+  if (pid > 0) exit(0);
+  if (pid < 0) exit(1);
   
   ev_default_fork();
 
-  close(STDIN_FILENO);
-  dup2(new_fd, STDOUT_FILENO);
-  dup2(new_fd, STDERR_FILENO);
-
   sid = setsid();
+  if(sid < 0) exit(1);
   
-  return Integer::New(getpid());
+  // Close stdin
+  freopen("/dev/null", "r", stdin);
+  
+  if (args.Length() > 0) {
+    new_fd = args[0]->Int32Value();
+    dup2(new_fd, STDOUT_FILENO);
+    dup2(new_fd, STDERR_FILENO);
+  }
+  else {
+    freopen("/dev/null", "w", stderr);
+    freopen("/dev/null", "w", stdout);
+  }
+  
+  return scope.Close(Integer::New(pid));
 }
 
-// File-lock to make sure that only one instance of daemon is running.. also for storing PID
-/* lock ( filename )
-*** filename: a path to a lock-file.
-*** Note: if filename doesn't exist, it will be created when function is called.
-*/
+//
+// Close stdin by redirecting it to /dev/null
+//
+Handle<Value> CloseStdin(const Arguments& args) {
+  freopen("/dev/null", "r", stdin);
+}
+
+//
+// Close stderr by redirecting to /dev/null
+//
+Handle<Value> CloseStderr(const Arguments& args) {
+  freopen("/dev/null", "w", stderr);
+}
+
+//
+// Close stdout by redirecting to /dev/null
+//
+Handle<Value> CloseStdout(const Arguments& args) {
+  freopen("/dev/null", "w", stdout);
+}
+
+//
+// File-lock to make sure that only one instance of daemon is running, also for storing pid
+//   lock (filename)
+//   @filename: a path to a lock-file.
+// 
+//   Note: if filename doesn't exist, it will be created when function is called.
+//
 Handle<Value> LockD(const Arguments& args) {
-	if(!args[0]->IsString())
-		return Boolean::New(false);
-	
-	String::Utf8Value data(args[0]->ToString());
-	char pid_str[PID_MAXLEN+1];
-	
-	int lfp = open(*data, O_RDWR | O_CREAT | O_TRUNC, 0640);
-	if(lfp < 0) exit(1);
-	if(lockf(lfp, F_TLOCK, 0) < 0) exit(0);
-	
-	int len = snprintf(pid_str, PID_MAXLEN, "%d", getpid());
-	write(lfp, pid_str, len);
-	
-	return Boolean::New(true);
+  if (!args[0]->IsString())
+    return Boolean::New(false);
+  
+  String::Utf8Value data(args[0]->ToString());
+  char pid_str[PID_MAXLEN+1];
+  
+  int lfp = open(*data, O_RDWR | O_CREAT | O_TRUNC, 0640);
+  if(lfp < 0) exit(1);
+  if(lockf(lfp, F_TLOCK, 0) < 0) exit(0);
+  
+  int len = snprintf(pid_str, PID_MAXLEN, "%d", getpid());
+  write(lfp, pid_str, len);
+  
+  return Boolean::New(true);
 }
 
 Handle<Value> SetSid(const Arguments& args) {
   pid_t sid;
-  
   sid = setsid();
-  
   return Integer::New(sid);
 }
 
+const char* ToCString(const v8::String::Utf8Value& value) {
+  return *value ? *value : "<string conversion failed>";
+}
+
+//
+// Set the chroot of this process. You probably want to be sure stuff is in here.
+//   chroot (folder)
+//   @folder {string}: The new root
+//
+Handle<Value> Chroot(const Arguments& args) {
+  if (args.Length() < 1) {
+    return ThrowException(Exception::TypeError(
+      String::New("Must have one argument; a string of the folder to chroot to.")
+    ));
+  }
+  uid_t uid;
+  int rv;
+
+  uid = getuid();
+  if (uid != 0) {
+    return ThrowException(Exception::Error(
+      String::New("You must be root in order to use chroot.")
+    ));
+  }
+
+  String::Utf8Value folderUtf8(args[0]->ToString());
+  const char *folder = ToCString(folderUtf8);
+  rv = chroot(folder);
+  if (rv != 0) {
+    return ThrowException(Exception::Error(
+      String::New("Failed do chroot to the folder.")
+    ));
+  }
+  chdir("/");
+
+  return Boolean::New(true);
+}
+
+//
+// Allow changing the real and effective user ID of this process 
+// so a root process can become unprivileged
+//
+Handle<Value> SetReuid(const Arguments& args) {
+  if (args.Length() == 0 || (!args[0]->IsString() && !args[0]->IsInt32()))
+    return ThrowException(Exception::Error(
+      String::New("Must give a uid or username to become")
+    ));
+
+  if (args[0]->IsString()) {
+    String::AsciiValue username(args[0]);
+
+    struct passwd* pwd_entry = getpwnam(*username);
+
+    if (pwd_entry) {
+      setreuid(pwd_entry->pw_uid, pwd_entry->pw_uid);
+    } 
+    else {
+      return ThrowException(Exception::Error(
+        String::New("User not found")
+      ));
+    }
+  }
+  else if (args[0]->IsInt32()) {
+    uid_t uid;
+    uid = args[0]->Int32Value();
+    setreuid(uid, uid);
+  }
+}
+
+//
+// Initialize this add-on
+//
 extern "C" void init(Handle<Object> target) {
   HandleScope scope;
   
-  target->Set(String::New("start"), FunctionTemplate::New(Start)->GetFunction());
-  target->Set(String::New("lock"), FunctionTemplate::New(LockD)->GetFunction());
-  target->Set(String::New("setSid"), FunctionTemplate::New(SetSid)->GetFunction());
+  NODE_SET_METHOD(target, "start", Start);
+  NODE_SET_METHOD(target, "lock", LockD);
+  NODE_SET_METHOD(target, "setsid", SetSid);
+  NODE_SET_METHOD(target, "chroot", Chroot);
+  NODE_SET_METHOD(target, "setreuid", SetReuid);
 }
