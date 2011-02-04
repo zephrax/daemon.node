@@ -30,9 +30,9 @@ using namespace node;
 
 //
 // Go through special routines to become a daemon.
-// if successful, returns daemon's PID
+// if successful, returns daemon pid
 //
-Handle<Value> Start(const Arguments& args) {
+Handle<Value> Daemonize(const Arguments& args) {
   HandleScope scope;
   pid_t pid, sid;
   int i, new_fd;
@@ -80,6 +80,15 @@ Handle<Value> CloseStderr(const Arguments& args) {
 // Close stdout by redirecting to /dev/null
 //
 Handle<Value> CloseStdout(const Arguments& args) {
+  freopen("/dev/null", "w", stdout);
+}
+
+//
+// Closes all stdio by redirecting to /dev/null
+//
+Handle<Value> CloseStdio(const Arguments& args) {
+  freopen("/dev/null", "r", stdin);
+  freopen("/dev/null", "w", stderr);
   freopen("/dev/null", "w", stdout);
 }
 
@@ -179,9 +188,13 @@ Handle<Value> SetReuid(const Arguments& args) {
 extern "C" void init(Handle<Object> target) {
   HandleScope scope;
   
-  NODE_SET_METHOD(target, "start", Start);
+  NODE_SET_METHOD(target, "daemonize", Daemonize);
   NODE_SET_METHOD(target, "lock", LockD);
   NODE_SET_METHOD(target, "setsid", SetSid);
   NODE_SET_METHOD(target, "chroot", Chroot);
   NODE_SET_METHOD(target, "setreuid", SetReuid);
+  NODE_SET_METHOD(target, "closeStderr", CloseStderr);
+  NODE_SET_METHOD(target, "closeStdout", CloseStdout);
+  NODE_SET_METHOD(target, "cloudStdin", CloseStdin);
+  NODE_SET_METHOD(target, "closeStdio", CloseStdio);
 }

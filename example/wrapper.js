@@ -19,38 +19,41 @@ catch (ex) {
 }
 
 var config = {
-	lockFile: '/tmp/testd.pid',	 // Location of lockFile
-	logFile: '/tmp/testd.log'    // Location of logFile
+  lockFile: '/tmp/testd.pid',  // Location of lockFile
+  logFile: '/tmp/testd.log'    // Location of logFile
 };
 
 var args = process.argv;
 
 // Handle start stop commands
 switch(args[2]) {
-	case "stop":
-		daemon.stop(config.lockFile, function (err, pid) {
-		  if (err) return sys.puts('Error stopping daemon: ' + err);
-		  sys.puts('Successfully stopped daemon with pid: ' + pid);
-		});
-		break;
-		
-	case "start":
-	  // Start HTTP Server
+  case "stop":
+    daemon.kill(config.lockFile, function (err, pid) {
+      if (err) return sys.puts('Error stopping daemon: ' + err);
+      sys.puts('Successfully stopped daemon with pid: ' + pid);
+    });
+    break;
+    
+  case "start":
+    // Start HTTP Server
     http.createServer(function(req, res) {
     //  sys.puts('Incoming request for: ' + req.url);
-    	res.writeHead(200, { 'Content-Type': 'text/html' });
-    	res.write('<h1>Hello, World!</h1>');
-    	res.end();
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.write('<h1>Hello, World!</h1>');
+      res.end();
     }).listen(8000);
     
-    daemon.run(config.logFile, config.lockFile, function (err, started) {
-      if (err) return sys.puts('Error starting daemon: ' + err);      
+    daemon.daemonize(config.logFile, config.lockFile, function (err, started) {
+      if (err) {
+        console.dir(err.stack);
+        return sys.puts('Error starting daemon: ' + err);      
+      }
       sys.puts('Successfully started daemon');
     });
     break;
-		
-	default:
-		sys.puts('Usage: [start|stop]');
-		break;
+    
+  default:
+    sys.puts('Usage: [start|stop]');
+    break;
 }
 

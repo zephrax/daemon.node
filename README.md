@@ -43,7 +43,7 @@ This library also exposes a higher level facility through javascript for startin
   
   // Your awesome code here
   
-  daemon.run('somefile.log', '/tmp/yourprogram.pid', function (err, started) {
+  daemon.daemonize('somefile.log', '/tmp/yourprogram.pid', function (err, started) {
     // We are now in the daemon process
     if (err) return sys.puts('Error starting daemon: ' + err);
     
