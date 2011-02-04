@@ -2,7 +2,15 @@
 * Daemon.node: A node.JS addon that allows creating Unix/Linux Daemons in pure Javascript.
  *
 * Copyright 2010 (c) <arthur@norgic.com>
+* Modified By: Pedro Teixeira  2010
+* Modified By: James Haliday   2010
+* Modified By: Charlie Robbins 2010
+* Modified By: Zak Taylor      2010
+* Modified By: Daniel Bartlett 2011
+* Modified By: Charlie Robbins 2011
+*
 * Under MIT License. See LICENSE file.
+*
 */
 
 #include <v8.h>
@@ -18,6 +26,7 @@
 #define PID_MAXLEN 10
 
 using namespace v8;
+using namespace node;
 
 //
 // Go through special routines to become a daemon.
@@ -40,7 +49,7 @@ Handle<Value> Start(const Arguments& args) {
   // Close stdin
   freopen("/dev/null", "r", stdin);
   
-  if (args.Length() > 0) {
+  if (args.Length() > 0 && args[0]->IsInt32()) {
     new_fd = args[0]->Int32Value();
     dup2(new_fd, STDOUT_FILENO);
     dup2(new_fd, STDERR_FILENO);
@@ -122,20 +131,11 @@ Handle<Value> Chroot(const Arguments& args) {
   uid_t uid;
   int rv;
 
-  uid = getuid();
-  if (uid != 0) {
-    return ThrowException(Exception::Error(
-      String::New("You must be root in order to use chroot.")
-    ));
-  }
-
   String::Utf8Value folderUtf8(args[0]->ToString());
   const char *folder = ToCString(folderUtf8);
   rv = chroot(folder);
   if (rv != 0) {
-    return ThrowException(Exception::Error(
-      String::New("Failed do chroot to the folder.")
-    ));
+    return ThrowException(ErrnoException(errno, "chroot"));
   }
   chdir("/");
 
