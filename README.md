@@ -31,7 +31,7 @@ Starting a daemon is easy, just call daemon.start() and daemon.lock().
   // Your awesome code here
   
   fs.open('somefile.log', 'w+', function (err, fd) {
-    daemon.start();
+    daemon.daemonize();
     daemon.lock('/tmp/yourprogram.pid');
   });
 </pre>
@@ -55,7 +55,7 @@ This library also exposes a higher level facility through javascript for startin
 This library is available under the MIT LICENSE. See the LICENSE file for more details. It was created by [Slashed][2] and [forked][3] / [improved][4] / [hacked upon][1] by a lot of good people. Special thanks to [Isaacs][5] for npm and a great example in [glob][6].
 
 #### Author: [Slashed](http://github.com/slashed)
-#### Contributors: [Charlie Robbins](http://nodejitsu.com), [Pedro Teixeira](https://github.com/pgte), [James Halliday](https://github.com/substack), [Zak Taylor](https://github.com/dobl)
+#### Contributors: [Charlie Robbins](http://nodejitsu.com), [Pedro Teixeira](https://github.com/pgte), [James Halliday](https://github.com/substack), [Zak Taylor](https://github.com/dobl), [Daniel Bartlett](https://github.com/danbuk)
 
 [0]: http://slashed.posterous.com/writing-daemons-in-javascript-with-nodejs-0
 [1]: https://github.com/pgte/fugue/blob/master/deps/daemon.cc
