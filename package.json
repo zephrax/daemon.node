@@ -1,6 +1,6 @@
 {
     "name" : "daemon",
-    "version" : "0.1.0",
+    "version" : "0.2.0",
     "description" : "Add-on for creating *nix daemons",
     "author": "Arthur (Slashed) <arthur@norgic.com>",
     "contributors": [
