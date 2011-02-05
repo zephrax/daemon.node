@@ -7,7 +7,8 @@
         { "name": "Pedro Teixeira", "email": "pedro.teixeira@gmail.com" },
         { "name": "Charlie Robbins", "email": "charlie.robbins@gmail.com" },
         { "name": "James Halliday", "email": "mail@substack.net" },
-        { "name": "Zak Taylor", "email": "zak@dobl.com" }
+        { "name": "Zak Taylor", "email": "zak@dobl.com" },
+        { "name": "Daniel Bartlett", "email": "dan@f-box.org" }
     ],
     "repository" : {
       "type" : "git",
@@ -18,6 +19,6 @@
         "preinstall" : "node-waf configure build"
     },
     "engines" : {
-       "node" : ">= 0.1.97"
+       "node" : ">= 0.2.0"
     }
 }
