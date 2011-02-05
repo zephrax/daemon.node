@@ -33,7 +33,6 @@ using namespace node;
 // if successful, returns daemon pid
 //
 Handle<Value> Daemonize(const Arguments& args) {
-  HandleScope scope;
   pid_t pid, sid;
   int i, new_fd;
 
@@ -59,7 +58,7 @@ Handle<Value> Daemonize(const Arguments& args) {
     freopen("/dev/null", "w", stdout);
   }
   
-  return scope.Close(Integer::New(pid));
+  return Integer::New(getpid());
 }
 
 //
