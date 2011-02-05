@@ -31,7 +31,7 @@ Starting a daemon is easy, just call daemon.start() and daemon.lock().
   // Your awesome code here
   
   fs.open('somefile.log', 'w+', function (err, fd) {
-    daemon.daemonize();
+    daemon.daemonize(fd);
     daemon.lock('/tmp/yourprogram.pid');
   });
 </pre>
@@ -43,11 +43,11 @@ This library also exposes a higher level facility through javascript for startin
   
   // Your awesome code here
   
-  daemon.daemonize('somefile.log', '/tmp/yourprogram.pid', function (err, started) {
+  daemon.daemonize('somefile.log', '/tmp/yourprogram.pid', function (err, pid) {
     // We are now in the daemon process
     if (err) return sys.puts('Error starting daemon: ' + err);
     
-    sys.puts('Daemon started successfully');
+    sys.puts('Daemon started successfully with pid: ' + pid);
   });
 </pre>
 
