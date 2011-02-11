@@ -19,7 +19,6 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <ev.h>
 #include <errno.h>
 #include <pwd.h>
 
@@ -32,33 +31,40 @@ using namespace node;
 // Go through special routines to become a daemon.
 // if successful, returns daemon pid
 //
-Handle<Value> Daemonize(const Arguments& args) {
-  pid_t pid, sid;
+static Handle<Value> Start(const Arguments& args) {
+  HandleScope scope;
+
+  pid_t sid, pid = fork();
   int i, new_fd;
 
-  pid = fork();
-  if (pid > 0) exit(0);
-  if (pid < 0) exit(1);
-  
-  ev_default_fork();
+  if (pid < 0)      exit(1);
+  else if (pid > 0) exit(0);
 
-  sid = setsid();
-  if(sid < 0) exit(1);
-  
-  // Close stdin
-  freopen("/dev/null", "r", stdin);
-  
-  if (args.Length() > 0 && args[0]->IsInt32()) {
-    new_fd = args[0]->Int32Value();
-    dup2(new_fd, STDOUT_FILENO);
-    dup2(new_fd, STDERR_FILENO);
+  if (pid == 0) {
+    // Child process: We need to tell libev that we are forking because
+    // kqueue can't deal with this gracefully.
+    //
+    // See: http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#code_ev_fork_code_the_audacity_to_re
+    ev_default_fork();
+    
+    sid = setsid();
+    if(sid < 0) exit(1);
+
+    // Close stdin
+    freopen("/dev/null", "r", stdin);
+    
+    if (args.Length() > 0 && args[0]->IsInt32()) {
+      new_fd = args[0]->Int32Value();
+      dup2(new_fd, STDOUT_FILENO);
+      dup2(new_fd, STDERR_FILENO);
+    }
+    else {
+      freopen("/dev/null", "w", stderr);
+      freopen("/dev/null", "w", stdout);
+    } 
   }
-  else {
-    freopen("/dev/null", "w", stderr);
-    freopen("/dev/null", "w", stdout);
-  }
-  
-  return Integer::New(getpid());
+
+  return scope.Close(Number::New(getpid()));
 }
 
 //
@@ -187,13 +193,13 @@ Handle<Value> SetReuid(const Arguments& args) {
 extern "C" void init(Handle<Object> target) {
   HandleScope scope;
   
-  NODE_SET_METHOD(target, "daemonize", Daemonize);
+  NODE_SET_METHOD(target, "start", Start);
   NODE_SET_METHOD(target, "lock", LockD);
   NODE_SET_METHOD(target, "setsid", SetSid);
   NODE_SET_METHOD(target, "chroot", Chroot);
   NODE_SET_METHOD(target, "setreuid", SetReuid);
   NODE_SET_METHOD(target, "closeStderr", CloseStderr);
   NODE_SET_METHOD(target, "closeStdout", CloseStdout);
-  NODE_SET_METHOD(target, "cloudStdin", CloseStdin);
+  NODE_SET_METHOD(target, "closeStdin", CloseStdin);
   NODE_SET_METHOD(target, "closeStdio", CloseStdio);
 }
