@@ -117,6 +117,7 @@ Handle<Value> LockD(const Arguments& args) {
   
   int len = snprintf(pid_str, PID_MAXLEN, "%d", getpid());
   write(lfp, pid_str, len);
+  fsync(lfp);
   
   return Boolean::New(true);
 }
