@@ -31,7 +31,7 @@ Starting a daemon is easy, just call daemon.start() and daemon.lock().
   // Your awesome code here
   
   fs.open('somefile.log', 'w+', function (err, fd) {
-    daemon.daemonize(fd);
+    daemon.start(fd);
     daemon.lock('/tmp/yourprogram.pid');
   });
 </pre>
@@ -63,4 +63,3 @@ This library is available under the MIT LICENSE. See the LICENSE file for more d
 [3]: https://github.com/substack/daemon.node/
 [4]: https://github.com/dobl/daemon.node
 [5]: https://github.com/isaacs/npm
-[6]: 
