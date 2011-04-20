@@ -113,7 +113,7 @@ Handle<Value> LockD(const Arguments& args) {
   
   int lfp = open(*data, O_RDWR | O_CREAT | O_TRUNC, 0640);
   if(lfp < 0) exit(1);
-  if(lockf(lfp, F_TLOCK, 0) < 0) exit(0);
+  if(lockf(lfp, F_TLOCK, 0) < 0) return Boolean::New(false);
   
   int len = snprintf(pid_str, PID_MAXLEN, "%d", getpid());
   write(lfp, pid_str, len);
