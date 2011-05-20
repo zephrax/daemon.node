@@ -65,3 +65,4 @@ This library is available under the MIT LICENSE. See the LICENSE file for more d
 [3]: https://github.com/substack/daemon.node/
 [4]: https://github.com/dobl/daemon.node
 [5]: https://github.com/isaacs/npm
+[6]: https://github.com/isaacs/node-glob
