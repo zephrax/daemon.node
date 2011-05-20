@@ -38,6 +38,7 @@ Starting a daemon is easy, just call daemon.start() and daemon.lock().
 ```
 
 This library also exposes a higher level facility through javascript for starting daemons:
+
 ``` js
   var sys = require('sys'),
       daemon = require('daemon');
