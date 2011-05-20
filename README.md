@@ -12,7 +12,7 @@ A C++ add-on for Node.js to enable simple daemons in Javascript plus some useful
 ### Installing daemon.node with npm
 ```
   [sudo] npm install daemon
-</pre>
+```
 
 ### Installing daemon.node locally 
 ```
