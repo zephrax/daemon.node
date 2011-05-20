@@ -5,19 +5,19 @@ A C++ add-on for Node.js to enable simple daemons in Javascript plus some useful
 ## Installation
 
 ### Installing npm (node package manager)
-<pre>
+```
   curl http://npmjs.org/install.sh | sh
-</pre>
+```
 
 ### Installing daemon.node with npm
-<pre>
+```
   [sudo] npm install daemon
 </pre>
 
 ### Installing daemon.node locally 
-<pre>
+```
   node-waf configure build  
-</pre>
+```
 
 ## Usage 
 
@@ -25,7 +25,8 @@ There is a great getting started article on daemons and node.js by Slashed that 
 
 ### Starting a daemon:
 Starting a daemon is easy, just call daemon.start() and daemon.lock(). 
-<pre>
+
+``` js
   var daemon = require('daemon');
   
   // Your awesome code here
@@ -34,10 +35,10 @@ Starting a daemon is easy, just call daemon.start() and daemon.lock().
     daemon.start(fd);
     daemon.lock('/tmp/yourprogram.pid');
   });
-</pre>
+```
 
 This library also exposes a higher level facility through javascript for starting daemons:
-<pre>
+``` js
   var sys = require('sys'),
       daemon = require('daemon');
   
@@ -49,7 +50,7 @@ This library also exposes a higher level facility through javascript for startin
     
     sys.puts('Daemon started successfully with pid: ' + pid);
   });
-</pre>
+```
 
 ### The Fine Print
 This library is available under the MIT LICENSE. See the LICENSE file for more details. It was created by [Slashed][2] and [forked][3] / [improved][4] / [hacked upon][1] by a lot of good people. Special thanks to [Isaacs][5] for npm and a great example in [glob][6].
