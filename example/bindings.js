@@ -5,7 +5,7 @@
  *
  */
 
-var sys = require('sys'),
+var util = require('util'),
     fs = require('fs'),
     http = require('http');
 
@@ -14,7 +14,7 @@ try {
   daemon = require('../lib/daemon');
 }
 catch (ex) {
-  sys.puts("Couldn't find 'daemon' add-on, did you install it yet?");
+  util.puts("Couldn't find 'daemon' add-on, did you install it yet?");
   process.exit(0);
 }
 
@@ -34,7 +34,9 @@ switch(args[2]) {
     
   case "start":
     fs.open(config.logFile, 'w+', function (err, fd) {
-      if (err) return sys.puts('Error starting daemon: ' + err);
+      if (err) {
+        return util.puts('Error starting daemon: ' + err);
+      }
       
       daemon.start(fd);
       daemon.lock(config.lockFile);
@@ -42,7 +44,7 @@ switch(args[2]) {
     break;
     
   default:
-    sys.puts('Usage: [start|stop]');
+    util.puts('Usage: [start|stop]');
     process.exit(0);
 }
 

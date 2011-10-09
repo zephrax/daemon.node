@@ -5,7 +5,7 @@
  *
  */
 
-var sys = require('sys'),
+var util = require('util'),
     fs = require('fs'),
     http = require('http');
 
@@ -14,7 +14,7 @@ try {
   daemon = require('../lib/daemon');
 }
 catch (ex) {
-  sys.puts("Couldn't find 'daemon' add-on, did you install it yet?");
+  util.puts("Couldn't find 'daemon' add-on, did you install it yet?");
   process.exit(0);
 }
 
@@ -29,15 +29,18 @@ var args = process.argv;
 switch(args[2]) {
   case "stop":
     daemon.kill(config.lockFile, function (err, pid) {
-      if (err) return sys.puts('Error stopping daemon: ' + err);
-      sys.puts('Successfully stopped daemon with pid: ' + pid);
+      if (err) {
+        return util.puts('Error stopping daemon: ' + err);
+      }
+      
+      util.puts('Successfully stopped daemon with pid: ' + pid);
     });
     break;
     
   case "start":
     // Start HTTP Server
     http.createServer(function(req, res) {
-    //  sys.puts('Incoming request for: ' + req.url);
+    //  util.puts('Incoming request for: ' + req.url);
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.write('<h1>Hello, World!</h1>');
       res.end();
@@ -46,14 +49,15 @@ switch(args[2]) {
     daemon.daemonize(config.logFile, config.lockFile, function (err, started) {
       if (err) {
         console.dir(err.stack);
-        return sys.puts('Error starting daemon: ' + err);      
+        return util.puts('Error starting daemon: ' + err);      
       }
-      sys.puts('Successfully started daemon');
+      
+      util.puts('Successfully started daemon');
     });
     break;
     
   default:
-    sys.puts('Usage: [start|stop]');
+    util.puts('Usage: [start|stop]');
     break;
 }
 
