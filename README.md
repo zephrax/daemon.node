@@ -40,23 +40,49 @@ Starting a daemon is easy, just call daemon.start() and daemon.lock().
 This library also exposes a higher level facility through javascript for starting daemons:
 
 ``` js
-  var util = require('util'),
-      daemon = require('daemon');
+  var daemon = require('daemon');
   
+  //
   // Your awesome code here
+  //
   
   daemon.daemonize({ stdout: 'somefile.log', stderr: 'error.log' }, '/tmp/yourprogram.pid', function (err, pid) {
+    //
     // We are now in the daemon process
-    if (err) return util.puts('Error starting daemon: ' + err);
+    //
+    if (err) {
+      return console.log('Error starting daemon: ' + err);
+    }
     
-    util.puts('Daemon started successfully with pid: ' + pid);
+    console.log('Daemon started successfully with pid: ' + pid);
+  });
+```
+
+If you wish you can also simply pass a single pass which you wish to be used for both `stdout` and `stderr`:
+
+``` js
+  var daemon = require('daemon');
+  
+  //
+  // Your awesome code here
+  //
+  
+  daemon.daemonize('stdout-and-stderr.log', '/tmp/yourprogram.pid', function (err, pid) {
+    //
+    // We are now in the daemon process
+    //
+    if (err) {
+      return console.log('Error starting daemon: ' + err);
+    }
+    
+    console.log('Daemon started successfully with pid: ' + pid);
   });
 ```
 
 ### Methods
 
-#### daemon.start([ fd for stdout and stderr | { stdout: fd, stderr: fd } ])
-  Either a file descriptor that stdout and stderr should be redirected to or an object containing separate file descriptors for 'stdout' and/or 'stderr'. Otherwise output will be sent to /dev/null.
+#### daemon.start(stdout[, stderr])
+  Takes two file descriptors, one for `stdout` and one for `stderr`. If only `stdout` is supplied, `stderr` will use the same fd. If no arguments are passed, `stdout` and `stderr` output will be sent to `/dev/null`.
 #### daemon.closeStdin()
   Closes stdin and reopens fd as /dev/null.
 #### daemon.closeStdout()
