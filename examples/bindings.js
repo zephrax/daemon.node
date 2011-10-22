@@ -19,8 +19,10 @@ catch (ex) {
 }
 
 var config = {
-  lockFile: '/tmp/testd.pid',  // Location of lockFile
-  logFile: '/tmp/testd.log'    // Location of logFile
+  // Location of lockFile
+  lockFile: process.argv[3] || '/tmp/testd.pid',  
+  // Location of logFile
+  logFile:  process.argv[4] || '/tmp/testd.log'   
 };
 
 var args = process.argv;
@@ -33,6 +35,13 @@ switch(args[2]) {
     break;
     
   case "start":
+    // Start HTTP Server
+    http.createServer(function(req, res) {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.write('I know nodejitsu.');
+      res.end();
+    }).listen(8000);
+    
     fs.open(config.logFile, 'w+', function (err, fd) {
       if (err) {
         return util.puts('Error starting daemon: ' + err);
@@ -47,10 +56,3 @@ switch(args[2]) {
     util.puts('Usage: [start|stop]');
     process.exit(0);
 }
-
-// Start HTTP Server
-http.createServer(function(req, res) {
-  res.writeHead(200, { 'Content-Type': 'text/html' });
-  res.write('<h1>Hello, World!</h1>');
-  res.end();
-}).listen(8000);
