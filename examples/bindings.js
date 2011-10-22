@@ -31,6 +31,7 @@ var args = process.argv;
 switch(args[2]) {
   case "stop":
     process.kill(parseInt(fs.readFileSync(config.lockFile)));
+    fs.unlinkSync(config.lockFile);
     process.exit(0);
     break;
     
