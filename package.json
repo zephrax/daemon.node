@@ -14,6 +14,9 @@
     "type" : "git",
     "url" : "http://github.com/indexzero/daemon.node.git" 
   },
+  "devDependencies": {
+    "vows": "0.5.x"
+  },
   "main": "./lib/daemon",
   "scripts" : {
     "preinstall" : "node-waf configure build"
