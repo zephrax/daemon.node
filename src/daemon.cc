@@ -35,7 +35,7 @@ static Handle<Value> Start(const Arguments& args) {
   HandleScope scope;
 
   pid_t sid, pid = fork();
-  int i, new_fd = -1, new_fd_stderr, length;
+  int new_fd = -1, new_fd_stderr, length;
 
   if (pid < 0)      exit(1);
   else if (pid > 0) exit(0);
@@ -54,6 +54,12 @@ static Handle<Value> Start(const Arguments& args) {
     freopen("/dev/null", "r", stdin);
     
     length = args.Length();
+    
+    //
+    // Attempt to set STDOUT_FIlENO if we have been
+    // passed an argument for it, otherwise point
+    // to /dev/null
+    //
     if (length > 0 && args[0]->IsInt32()) {
       new_fd = args[0]->Int32Value();
       dup2(new_fd, STDOUT_FILENO);
@@ -62,6 +68,10 @@ static Handle<Value> Start(const Arguments& args) {
       freopen("/dev/null", "w", stdout);
     }
 
+    //
+    // Get the STDERR fd if it has been passed
+    // as an argument
+    //
     if (length > 1 && args[1]->IsInt32()) {
       new_fd_stderr = args[1]->Int32Value();
     }
@@ -69,6 +79,11 @@ static Handle<Value> Start(const Arguments& args) {
       new_fd_stderr = new_fd;
     }
 
+    //
+    // Attempt to set STDERR_FILENO if we have
+    // a valid file descriptor, otherwise point
+    // to /dev/null
+    //
     if (new_fd_stderr != -1) {
       dup2(new_fd_stderr, STDERR_FILENO);
     }
