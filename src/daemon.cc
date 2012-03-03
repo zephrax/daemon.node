@@ -8,6 +8,7 @@
 * Modified By: Zak Taylor      2010
 * Modified By: Daniel Bartlett 2011
 * Modified By: Charlie Robbins 2011
+* Brought to its final resting place by: Charlie McConnell 2012
 *
 * Under MIT License. See LICENSE file.
 *
@@ -27,6 +28,10 @@
 
 using namespace v8;
 using namespace node;
+
+const char* ToCString(const v8::String::Utf8Value& value) {
+  return *value ? *value : "<string conversion failed>";
+}
 
 //
 // Go through special routines to become a daemon.
@@ -63,12 +68,14 @@ static Handle<Value> Start(const Arguments& args) {
     //
     if (length > 0 && args[0]->IsString()) {
       String::Utf8Value outfile(args[0]->ToString());
-      new_fd = open(*outfile, O_WRONLY | O_APPEND | O_CREAT,
+      new_fd = open(ToCString(outfile), O_WRONLY | O_APPEND | O_CREAT,
                 S_IWUSR | S_IWGRP | S_IRUSR | S_IRGRP);
       if (new_fd < 0) {
-        return ThrowException(ErrnoException(errno, "open()"));
+        return ThrowException(ErrnoException(errno, "open(), stdout"));
       }
-      dup2(new_fd, STDOUT_FILENO);
+      if (dup2(new_fd, STDOUT_FILENO) < 0) {
+        return ThrowException(ErrnoException(errno, "dup2(), stdout"));
+      }
     }
     else {
       freopen("/dev/null", "w", stdout);
@@ -80,10 +87,10 @@ static Handle<Value> Start(const Arguments& args) {
     //
     if (length > 1 && args[1]->IsString()) {
       String::Utf8Value errfile(args[1]->ToString());
-      new_fd_stderr = open(*errfile, O_WRONLY | O_APPEND | O_CREAT,
+      new_fd_stderr = open(ToCString(errfile), O_WRONLY | O_APPEND | O_CREAT,
                             S_IWUSR | S_IWGRP | S_IRUSR | S_IRGRP);
       if (new_fd_stderr < 0) {
-        return ThrowException(ErrnoException(errno, "open()"));
+        return ThrowException(ErrnoException(errno, "open(), stderr"));
       }
     }
     else {
@@ -96,7 +103,9 @@ static Handle<Value> Start(const Arguments& args) {
     // to /dev/null
     //
     if (new_fd_stderr != -1) {
-      dup2(new_fd_stderr, STDERR_FILENO);
+      if (dup2(new_fd_stderr, STDERR_FILENO) < 0) {
+        return ThrowException(ErrnoException(errno, "dup2(), stderr"));
+      }
     }
     else {
       freopen("/dev/null", "w", stderr);
@@ -161,9 +170,6 @@ Handle<Value> LockD(const Arguments& args) {
   return Boolean::New(true);
 }
 
-const char* ToCString(const v8::String::Utf8Value& value) {
-  return *value ? *value : "<string conversion failed>";
-}
 
 //
 // Set the chroot of this process. You probably want to be sure stuff is in here.
