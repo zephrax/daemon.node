@@ -24,7 +24,7 @@ var config = {
   // Location of logFile (or stdout if `process.argv[5]` exists).
   outFile:  process.argv[4] || '/tmp/testd.log',
   // Location of stderr file
-  errFile:  process.argv[5] || null
+  errFile:  process.argv[5] || '/tmp/testd.err'
 };
 
 var args = process.argv;
@@ -53,18 +53,14 @@ switch(args[2]) {
       ? { stdout: config.outFile, stderr: config.errFile }
       : config.outFile;
     
-    daemon.daemonize(fds, config.lockFile, function (err, started) {
-      if (err) {
-        console.dir(err.stack);
-        return util.puts('Error starting daemon: ' + err);      
-      }
-      
-      util.puts('Successfully started daemon');
-    });
+    daemon.start(config.outFile, config.errFile);
+    daemon.lock(config.lockFile);
+    
+    console.log('Successfully started daemon');
     break;
     
   default:
-    util.puts('Usage: [start|stop]');
+    console.log('Usage: [start|stop]');
     break;
 }
 
