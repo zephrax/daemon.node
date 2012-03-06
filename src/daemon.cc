@@ -8,7 +8,6 @@
 * Modified By: Zak Taylor      2010
 * Modified By: Daniel Bartlett 2011
 * Modified By: Charlie Robbins 2011
-* Brought to its final resting place by: Charlie McConnell 2012
 *
 * Under MIT License. See LICENSE file.
 *
@@ -50,6 +49,7 @@ static Handle<Value> Start(const Arguments& args) {
 
   if (pid == 0) {
     // Child process:
+    ev_default_fork();
 
     sid = setsid();
     if(sid < 0) {
