@@ -1,5 +1,7 @@
 # daemon.node
 
+**This library should be considered DEPRECATED. You should be using [detached child processes in Node.js core instead!](http://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options)**
+
 A C++ add-on for Node.js to enable simple daemons in Javascript plus some useful wrappers in Javascript.
 
 ## Installation
