@@ -29,10 +29,36 @@ var pid = daemon();
 console.log(process.pid);
 ```
 
-## notes
+## api
+
+### daemon()
+
+Respawn the process (self) as a daemon. The parent process will exit at the point of this call.
+
+### daemon.daemon(script, args, opt)
+
+Spawn the `script` with given `args` array as a daemonized process.
+
+opt can optionally contain the following arguments:
+* stdout (file descriptor for stdout of the daemon)
+* stderr (file descriptor for stderr of the daemon)
+* env (environment for the daemon) (default: process.env)
+
+## implementation notes
 
 Daemon actually re-spawns the current application and runs it again. The only difference between the original and the fork is that the original will not execute past the `daemon()` call whereas the fork will.
 
-### Author: [Slashed](http://github.com/slashed)
-### Contributors: [Charlie Robbins](http://nodejitsu.com), [Pedro Teixeira](https://github.com/pgte), [James Halliday](https://github.com/substack), [Zak Taylor](https://github.com/dobl), [Daniel Bartlett](https://github.com/danbuk), [Charlie McConnell](https://github.com/AvianFlu)
+## node versions prior to 0.8
+
+Using this module on older versions of node (or older versions of this module) are not recommended due to how node works internally and the issues it can cause for daemons.
+
+### Contributors
+[Charlie Robbins](http://nodejitsu.com)  
+[Pedro Teixeira](https://github.com/pgte)  
+[James Halliday](https://github.com/substack)  
+[Zak Taylor](https://github.com/dobl)  
+[Daniel Bartlett](https://github.com/danbuk)  
+[Charlie McConnell](https://github.com/AvianFlu)  
+[Slashed](http://github.com/slashed)  
+[Roman Shtylman](http://github.com/shtylman)  
 
