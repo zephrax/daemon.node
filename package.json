@@ -2,7 +2,7 @@
   "name" : "daemon",
   "version" : "0.5.1",
   "description" : "Add-on for creating *nix daemons",
-  "author": "Arthur (Slashed) <arthur@norgic.com>",
+  "author": "Roman Shtylman <shtylman@gmail.com>",
   "contributors": [
     { "name": "Pedro Teixeira", "email": "pedro.teixeira@gmail.com" },
     { "name": "Charlie Robbins", "email": "charlie.robbins@gmail.com" },
@@ -10,7 +10,8 @@
     { "name": "Zak Taylor", "email": "zak@dobl.com" },
     { "name": "Daniel Bartlett", "email": "dan@f-box.org" },
     { "name": "Charlie McConnell", "email": "charlie@charlieistheman.com" },
-    { "name": "Josh Holbrook", "email": "josh@nodejitsu.com" }
+    { "name": "Josh Holbrook", "email": "josh@nodejitsu.com" },
+    { "name": "Arthur (Slashed)", "email": "arthur@norgic.com" }
   ],
   "repository" : {
     "type" : "git",
