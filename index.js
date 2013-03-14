@@ -16,11 +16,11 @@ module.exports = function(opt) {
     var script = args.shift();
 
     // start ourselves as a daemon
-    var child = module.exports.daemon(script, args, opt);
+    module.exports.daemon(script, args, opt);
 
     // parent is done
     return process.exit();
-}
+};
 
 // daemonizes the script and returns the child process object
 module.exports.daemon = function(script, args, opt) {
@@ -35,18 +35,18 @@ module.exports.daemon = function(script, args, opt) {
     // the child process will have this set to know they are daemonized
     env.__daemon = true;
 
-    var opt = {
+    var cp_opt = {
         stdio: ['ignore', stdout, stderr],
         env: env,
         detached: true
     };
 
     // spawn the child using the same node process as ours
-    var child = child_process.spawn(process.execPath, [script].concat(args), opt);
+    var child = child_process.spawn(process.execPath, [script].concat(args), cp_opt);
 
-    // required so the parent will exit
+    // required so the parent can exit
     child.unref();
 
-    return child.pid;
-}
+    return child;
+};
 

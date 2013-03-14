@@ -3,7 +3,7 @@ var daemon = require('../../');
 
 var port = process.argv[2];
 
-var pid = daemon({
+daemon({
     stdout: process.stdout,
     stderr: process.stderr
 });

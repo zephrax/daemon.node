@@ -15,14 +15,12 @@ Requires node >= 0.8
 ## examples
 
 ```javascript
-var daemon = require('daemon');
-
+// this code is run twice
+// see implementation notes below
 console.log(process.pid);
 
-/// code above this line will run twice
-/// see notes below
-
-var pid = daemon();
+// after this point, we are a daemon
+require('daemon')();
 
 // different pid because we are now forked
 // original parent has exited
@@ -37,7 +35,7 @@ Respawn the process (self) as a daemon. The parent process will exit at the poin
 
 ### daemon.daemon(script, args, opt)
 
-Spawn the `script` with given `args` array as a daemonized process.
+Spawn the `script` with given `args` array as a daemonized process. Return the `child` process object.
 
 opt can optionally contain the following arguments:
 * stdout (file descriptor for stdout of the daemon)
