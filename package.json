@@ -1,21 +1,45 @@
 {
-  "name" : "daemon",
-  "version" : "0.5.1",
-  "description" : "Add-on for creating *nix daemons",
+  "name": "daemon",
+  "version": "1.0.0",
+  "description": "Add-on for creating *nix daemons",
   "author": "Roman Shtylman <shtylman@gmail.com>",
   "contributors": [
-    { "name": "Pedro Teixeira", "email": "pedro.teixeira@gmail.com" },
-    { "name": "Charlie Robbins", "email": "charlie.robbins@gmail.com" },
-    { "name": "James Halliday", "email": "mail@substack.net" },
-    { "name": "Zak Taylor", "email": "zak@dobl.com" },
-    { "name": "Daniel Bartlett", "email": "dan@f-box.org" },
-    { "name": "Charlie McConnell", "email": "charlie@charlieistheman.com" },
-    { "name": "Josh Holbrook", "email": "josh@nodejitsu.com" },
-    { "name": "Arthur (Slashed)", "email": "arthur@norgic.com" }
+    {
+      "name": "Pedro Teixeira",
+      "email": "pedro.teixeira@gmail.com"
+    },
+    {
+      "name": "Charlie Robbins",
+      "email": "charlie.robbins@gmail.com"
+    },
+    {
+      "name": "James Halliday",
+      "email": "mail@substack.net"
+    },
+    {
+      "name": "Zak Taylor",
+      "email": "zak@dobl.com"
+    },
+    {
+      "name": "Daniel Bartlett",
+      "email": "dan@f-box.org"
+    },
+    {
+      "name": "Charlie McConnell",
+      "email": "charlie@charlieistheman.com"
+    },
+    {
+      "name": "Josh Holbrook",
+      "email": "josh@nodejitsu.com"
+    },
+    {
+      "name": "Arthur (Slashed)",
+      "email": "arthur@norgic.com"
+    }
   ],
-  "repository" : {
-    "type" : "git",
-    "url" : "http://github.com/indexzero/daemon.node.git"
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/indexzero/daemon.node.git"
   },
   "scripts": {
     "test": "mocha --ui qunit test/*.js"
@@ -25,7 +49,7 @@
     "after": "0.6.0"
   },
   "main": "./index.js",
-  "engines" : {
-     "node" : ">= 0.8.0"
+  "engines": {
+    "node": ">= 0.8.0"
   }
 }
