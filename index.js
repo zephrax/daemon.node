@@ -25,11 +25,6 @@ module.exports = function(opt) {
 // daemonizes the script and returns the child process object
 module.exports.daemon = function(script, args, opt) {
 
-    // we are a daemon
-    if (process.env.__daemon) {
-        return process.pid;
-    }
-
     opt = opt || {};
 
     var stdout = opt.stdout || 'ignore';
