@@ -1,5 +1,7 @@
 # daemon
 
+[![Build Status](https://secure.travis-ci.org/indexzero/daemon.node.png)](http://travis-ci.org/indexzero/daemon.node)
+
 Turn a node script into a daemon.
 
 ## install via npm
