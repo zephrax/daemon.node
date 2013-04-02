@@ -15,6 +15,12 @@ module.exports = function(opt) {
     // our script name
     var script = args.shift();
 
+    opt = opt || {};
+    var env = opt.env || process.env;
+
+    // the child process will have this set so we can identify it as being daemonized
+    env.__daemon = true;
+
     // start ourselves as a daemon
     module.exports.daemon(script, args, opt);
 
@@ -32,9 +38,6 @@ module.exports.daemon = function(script, args, opt) {
 
     var env = opt.env || process.env;
     var cwd = opt.cwd || process.cwd;
-
-    // the child process will have this set to know they are daemonized
-    env.__daemon = true;
 
     var cp_opt = {
         stdio: ['ignore', stdout, stderr],
