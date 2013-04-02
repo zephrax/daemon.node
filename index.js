@@ -31,6 +31,7 @@ module.exports.daemon = function(script, args, opt) {
     var stderr = opt.stderr || 'ignore';
 
     var env = opt.env || process.env;
+    var cwd = opt.cwd || process.cwd;
 
     // the child process will have this set to know they are daemonized
     env.__daemon = true;
@@ -38,6 +39,7 @@ module.exports.daemon = function(script, args, opt) {
     var cp_opt = {
         stdio: ['ignore', stdout, stderr],
         env: env,
+        cwd: cwd,
         detached: true
     };
 

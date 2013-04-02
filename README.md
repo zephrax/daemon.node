@@ -41,6 +41,7 @@ opt can optionally contain the following arguments:
 * stdout (file descriptor for stdout of the daemon)
 * stderr (file descriptor for stderr of the daemon)
 * env (environment for the daemon) (default: process.env)
+* cwd (current working directory for daemonized script) (default: process.cwd)
 
 ## implementation notes
 
