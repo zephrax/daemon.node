@@ -29,9 +29,10 @@ console.log(process.pid);
 
 ## api
 
-### daemon()
+### daemon(opt)
 
 Respawn the process (self) as a daemon. The parent process will exit at the point of this call.
+`opt` parameter see below.
 
 ### daemon.daemon(script, args, opt)
 
